@@ -5,6 +5,17 @@ install: grpc-install api-linter-install buf-install proto
 
 # Run all linters and compile proto files.
 proto: grpc
+
+clean-hack:
+	find . -type f -name '*.pb.go' -exec rm {} \;
+
+# why do i even have to fix it this way, get your shit together
+hack: clean-hack proto
+	rsync -av ./.gen/ .
+	rm -r .gen ./dependencies
+	find . -type f -name '*.pb.go' -exec sed -i -E 's/go.temporal.io\/api\/dependencies\/gogoproto/github.com\/gogo\/protobuf\/gogoproto/g' {} \;
+	find . -type f -name '*.pb.go' -exec go fmt {} \;
+
 ########################################################################
 
 ##### Variables ######
